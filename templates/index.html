@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Home Management System</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>🏠 Home Management System</h1>
+
+        <p class="subtitle">
+            Manage your daily home activities easily
+        </p>
+
+        <p>
+            Welcome, {{ session["username"] }}!
+        </p>
+
+        <a href="/logout">
+            <button>Logout</button>
+        </a>
+
+
+        <!-- Dashboard Statistics -->
+
+        <div class="dashboard">
+
+            <div class="stat-card">
+                <h2>📋</h2>
+                <h3>Total Tasks</h3>
+                <p>{{ tasks_count }}</p>
+            </div>
+
+
+            <div class="stat-card">
+                <h2>💰</h2>
+                <h3>Total Expenses</h3>
+                <p>₹{{ expenses_total }}</p>
+            </div>
+
+
+            <div class="stat-card">
+                <h2>🛒</h2>
+                <h3>Shopping Items</h3>
+                <p>{{ shopping_count }}</p>
+            </div>
+
+        </div>
+
+
+        <!-- Management Cards -->
+
+        <div class="cards">
+
+            <div class="card">
+
+                <h2>📋 Tasks</h2>
+
+                <p>
+                    Manage your daily tasks and activities.
+                </p>
+
+                <a href="/tasks">
+                    <button>Manage Tasks</button>
+                </a>
+
+            </div>
+
+
+            <div class="card">
+
+                <h2>💰 Expenses</h2>
+
+                <p>
+                    Track your home expenses and spending.
+                </p>
+
+                <a href="/expenses">
+                    <button>Manage Expenses</button>
+                </a>
+
+            </div>
+
+
+            <div class="card">
+
+                <h2>🛒 Shopping</h2>
+
+                <p>
+                    Keep track of your shopping items.
+                </p>
+
+                <a href="/shopping">
+                    <button>Manage Shopping</button>
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- Recent Tasks -->
+
+        <div class="recent-section">
+
+            <h2>📋 Recent Tasks</h2>
+
+            {% if recent_tasks %}
+
+                <ul class="recent-list">
+
+                    {% for task in recent_tasks %}
+
+                        <li>
+
+                            {% if task["completed"] == 1 %}
+
+                                ✓ {{ task["task"] }}
+
+                            {% else %}
+
+                                {{ task["task"] }}
+
+                            {% endif %}
+
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            {% else %}
+
+                <p>No recent tasks.</p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- Recent Expenses -->
+
+        <div class="recent-section">
+
+            <h2>💰 Recent Expenses</h2>
+
+            {% if recent_expenses %}
+
+                <ul class="recent-list">
+
+                    {% for expense in recent_expenses %}
+
+                        <li>
+
+                            <span>
+                                {{ expense["name"] }}
+                            </span>
+
+                            <strong>
+                                ₹{{ expense["amount"] }}
+                            </strong>
+
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            {% else %}
+
+                <p>No recent expenses.</p>
+
+            {% endif %}
+
+        </div>
+
+                <!-- Recent Shopping -->
+
+        <div class="recent-section">
+
+            <h2>🛒 Recent Shopping</h2>
+
+            {% if recent_shopping %}
+
+                <ul class="recent-list">
+
+                    {% for item in recent_shopping %}
+
+                        <li>
+                            {{ item["item"] }}
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            {% else %}
+
+                <p>No recent shopping items.</p>
+
+            {% endif %}
+
+        </div>
+
+
+    </div>
+
+</body>
+
+</html>

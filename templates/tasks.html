@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Tasks</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="page-container">
+
+        <h1>📋 Manage Tasks</h1>
+        <p class="page-subtitle">Add and manage your daily tasks</p>
+
+        <form method="POST" action="/tasks" class="form-box">
+            <input type="text" name="task" placeholder="Enter a task" required>
+            <button type="submit">Add Task</button>
+        </form>
+
+        <div class="list-box">
+
+            <h2>My Tasks</h2>
+
+            {% if tasks %}
+
+                <ul class="item-list">
+
+                    {% for task in tasks %}
+
+                        <li>
+
+                            <span class="{% if task['completed'] == 1 %}completed{% endif %}">
+                                {% if task['completed'] == 1 %}
+                                    ✓ {{ task["task"] }}
+                                {% else %}
+                                    {{ task["task"] }}
+                                {% endif %}
+                            </span>
+
+                            <div>
+                                {% if task["completed"] == 0 %}
+                                    <a href="/complete_task/{{ task['id'] }}" class="complete-btn">
+                                        Complete
+                                    </a>
+                                {% endif %}
+
+                                <a href="/delete_task/{{ task['id'] }}" class="delete-btn">
+                                    Delete
+                                </a>
+                            </div>
+
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            {% else %}
+
+                <p>No tasks added yet.</p>
+
+            {% endif %}
+
+        </div>
+
+        <a href="/" class="back-link">← Back to Home</a>
+
+    </div>
+
+</body>
+</html>

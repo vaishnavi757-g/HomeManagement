@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Manage Shopping</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="page-container">
+
+        <h1>🛒 Manage Shopping</h1>
+
+        <p class="page-subtitle">
+            Keep track of your shopping items
+        </p>
+
+
+        <form method="POST" action="/shopping" class="form-box">
+
+            <input
+                type="text"
+                name="item"
+                placeholder="Enter shopping item"
+                required
+            >
+
+            <button type="submit">
+                Add Item
+            </button>
+
+        </form>
+
+
+        <div class="list-box">
+
+            <h2>Shopping List</h2>
+
+            {% if shopping_list %}
+
+                <ul class="item-list">
+
+                    {% for item in shopping_list %}
+
+                        <li>
+
+                            <span class="{% if item['completed'] == 1 %}completed{% endif %}">
+
+                                {% if item["completed"] == 1 %}
+                                    ✓ {{ item["item"] }}
+                                {% else %}
+                                    {{ item["item"] }}
+                                {% endif %}
+
+                            </span>
+
+
+                            <div>
+
+                                {% if item["completed"] == 0 %}
+
+                                    <a
+                                        href="/complete_shopping/{{ item['id'] }}"
+                                        class="complete-btn"
+                                    >
+                                        Bought
+                                    </a>
+
+                                {% endif %}
+
+
+                                <a
+                                    href="/delete_shopping/{{ item['id'] }}"
+                                    class="delete-btn"
+                                >
+                                    Delete
+                                </a>
+
+                            </div>
+
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            {% else %}
+
+                <p>No shopping items added yet.</p>
+
+            {% endif %}
+
+        </div>
+
+
+        <a href="/" class="back-link">
+            ← Back to Home
+        </a>
+
+    </div>
+
+</body>
+
+</html>

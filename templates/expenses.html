@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Expenses</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="page-container">
+
+        <h1>💰 Manage Expenses</h1>
+        <p class="page-subtitle">Track and manage your home expenses</p>
+
+        <form method="POST" action="/expenses" class="form-box">
+
+            <input
+                type="text"
+                name="expense"
+                placeholder="Enter expense"
+                required
+            >
+
+            <input
+                type="number"
+                name="amount"
+                placeholder="Enter amount"
+                step="0.01"
+                required
+            >
+
+            <button type="submit">Add Expense</button>
+
+        </form>
+
+        <div class="list-box">
+
+            <h2>My Expenses</h2>
+
+            {% if expenses %}
+
+                <ul class="item-list">
+
+                    {% for expense in expenses %}
+
+                        <li>
+                            <span>
+                                {{ expense["name"] }}
+                            </span>
+
+                            <strong>
+                                ₹{{ expense["amount"] }}
+                            </strong>
+
+                            <a href="/delete_expense/{{ expense['id'] }}" class="delete-btn">
+                                Delete
+                            </a>
+                        </li>
+                    {% endfor %}
+
+                </ul>
+
+            {% else %}
+
+                <p>No expenses added yet.</p>
+
+            {% endif %}
+
+        </div>
+
+        <a href="/" class="back-link">← Back to Home</a>
+
+    </div>
+
+</body>
+</html>
