@@ -74,9 +74,6 @@ def init_db():
 
     conn.close()
 
-
-# Home page
-@app.route("/")
 # Home page
 @app.route("/")
 def home():
@@ -157,6 +154,9 @@ def home():
         recent_expenses=recent_expenses,
         recent_shopping=recent_shopping
     )
+@app.route("/about")
+def about():
+    return render_template("about.html")
 # Register
 @app.route("/register", methods=["GET", "POST"])
 def register():
