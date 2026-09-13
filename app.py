@@ -57,6 +57,17 @@ def init_db():
             user_id INTEGER
         )
     """)
+    # Media Management table
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS media (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            media_type TEXT NOT NULL,
+            url TEXT NOT NULL,
+            description TEXT,
+            user_id INTEGER
+        )
+    """)
 
     try:
         conn.execute("""
@@ -559,6 +570,78 @@ def delete_project(project_id):
 
     return redirect(url_for("projects"))
 
+# Media Management
+@app.route("/media", methods=["GET", "POST"])
+def media():
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+
+    user = conn.execute(
+        "SELECT id FROM users WHERE username = ?",
+        (session["username"],)
+    ).fetchone()
+
+    if request.method == "POST":
+        title = request.form["title"]
+        media_type = request.form["media_type"]
+        url = request.form["url"]
+        description = request.form["description"]
+
+        conn.execute(
+            """
+            INSERT INTO media
+            (title, media_type, url, description, user_id)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (title, media_type, url, description, user["id"])
+        )
+
+        conn.commit()
+
+    media_list = conn.execute(
+        """
+        SELECT * FROM media
+        WHERE user_id = ?
+        ORDER BY id DESC
+        """,
+        (user["id"],)
+    ).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "media.html",
+        media=media_list
+    )
+
+
+@app.route("/delete_media/<int:media_id>")
+def delete_media(media_id):
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+
+    user = conn.execute(
+        "SELECT id FROM users WHERE username = ?",
+        (session["username"],)
+    ).fetchone()
+
+    conn.execute(
+        """
+        DELETE FROM media
+        WHERE id = ? AND user_id = ?
+        """,
+        (media_id, user["id"])
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("media"))
+    
 @app.route("/delete_expense/<int:expense_id>")
 def delete_expense(expense_id):
 
