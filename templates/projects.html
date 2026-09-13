@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>📊 Project Management</h1>
+
+        <p>Manage your projects easily.</p>
+
+        <hr>
+
+        <h2>Add New Project</h2>
+
+        <form method="POST">
+
+            <input
+                type="text"
+                name="name"
+                placeholder="Project Name"
+                required
+            >
+
+            <textarea
+                name="description"
+                placeholder="Project Description"
+            ></textarea>
+
+            <label>Start Date:</label>
+            <input
+                type="date"
+                name="start_date"
+            >
+
+            <label>End Date:</label>
+            <input
+                type="date"
+                name="end_date"
+            >
+
+            <label>Status:</label>
+
+            <select name="status">
+                <option value="Not Started">Not Started</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+            </select>
+
+            <button type="submit">➕ Add Project</button>
+
+        </form>
+
+        <hr>
+
+        <h2>My Projects</h2>
+
+        {% if projects %}
+
+            {% for project in projects %}
+
+                <div class="project-card">
+
+                    <h3>{{ project["name"] }}</h3>
+
+                    <p>
+                        {{ project["description"] }}
+                    </p>
+
+                    <p>
+                        <strong>Start Date:</strong>
+                        {{ project["start_date"] }}
+                    </p>
+
+                    <p>
+                        <strong>End Date:</strong>
+                        {{ project["end_date"] }}
+                    </p>
+
+                    <p>
+                        <strong>Status:</strong>
+                        {{ project["status"] }}
+                    </p>
+
+                    <a href="/delete_project/{{ project['id'] }}">
+                        <button type="button">🗑️ Delete</button>
+                    </a>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>No projects added yet.</p>
+
+        {% endif %}
+
+        <br>
+
+        <a href="/">
+            <button type="button">🏠 Back to Home</button>
+        </a>
+
+    </div>
+
+</body>
+</html>

@@ -36,6 +36,28 @@ def init_db():
             item TEXT NOT NULL
         )
     """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL
+        )
+    """)
+
+    # Project Management table
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS projects (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            description TEXT,
+            start_date TEXT,
+            end_date TEXT,
+            status TEXT DEFAULT 'Not Started',
+            user_id INTEGER
+        )
+    """)
+
     try:
         conn.execute("""
             ALTER TABLE shopping
@@ -43,13 +65,7 @@ def init_db():
         """)
     except sqlite3.OperationalError:
         pass
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL
-            )
-        """)
+
     try:
         conn.execute(
             "ALTER TABLE tasks ADD COLUMN user_id INTEGER"
@@ -70,8 +86,8 @@ def init_db():
         )
     except sqlite3.OperationalError:
         pass
-    conn.commit()
 
+    conn.commit()
     conn.close()
 
 # Home page
@@ -393,6 +409,18 @@ def shopping():
         "shopping.html",
         shopping_list=shopping_list
     )
+ # Project Management table
+    conn.execute("""
+    CREATE TABLE IF NOT EXISTS projects (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        description TEXT,
+        start_date TEXT,
+        end_date TEXT,
+        status TEXT DEFAULT 'Not Started',
+        user_id INTEGER
+    )
+""")
 
 @app.route("/delete_shopping/<int:item_id>")
 def delete_shopping(item_id):
@@ -446,6 +474,90 @@ def complete_shopping(item_id):
     conn.close()
 
     return redirect(url_for("shopping"))
+
+# Project Management
+@app.route("/projects", methods=["GET", "POST"])
+def projects():
+
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+
+    user = conn.execute(
+        "SELECT id FROM users WHERE username = ?",
+        (session["username"],)
+    ).fetchone()
+
+    if request.method == "POST":
+
+        name = request.form["name"]
+        description = request.form["description"]
+        start_date = request.form["start_date"]
+        end_date = request.form["end_date"]
+        status = request.form["status"]
+
+        conn.execute(
+            """
+            INSERT INTO projects
+            (name, description, start_date, end_date, status, user_id)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                name,
+                description,
+                start_date,
+                end_date,
+                status,
+                user["id"]
+            )
+        )
+
+        conn.commit()
+
+    projects_list = conn.execute(
+        """
+        SELECT * FROM projects
+        WHERE user_id = ?
+        ORDER BY id DESC
+        """,
+        (user["id"],)
+    ).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "projects.html",
+        projects=projects_list
+    )
+
+
+# Delete Project
+@app.route("/delete_project/<int:project_id>")
+def delete_project(project_id):
+
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+
+    user = conn.execute(
+        "SELECT id FROM users WHERE username = ?",
+        (session["username"],)
+    ).fetchone()
+
+    conn.execute(
+        """
+        DELETE FROM projects
+        WHERE id = ? AND user_id = ?
+        """,
+        (project_id, user["id"])
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("projects"))
 
 @app.route("/delete_expense/<int:expense_id>")
 def delete_expense(expense_id):

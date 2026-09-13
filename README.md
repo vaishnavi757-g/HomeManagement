@@ -40,7 +40,7 @@ https://home-management-system-ormb.onrender.com/
 
 ```text
 HomeManagement/
-│
+
 ├── app.py
 ├── database.db
 ├── requirements.txt
