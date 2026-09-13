@@ -584,6 +584,7 @@ def delete_expense(expense_id):
     conn.close()
 
     return redirect(url_for("expenses"))
+init_db()
 
 if __name__ == "__main__":
     init_db()
